@@ -1,5 +1,5 @@
 import numpy as np
-from scipy.special import softmax
+
 
 def softmax(x):
     """Compute the softmax function for each row of the input x.
@@ -26,23 +26,10 @@ def softmax(x):
     Return:
     x -- You are allowed to modify x in-place
     """
-    x=x.astype(float)
-    if len(x.shape) > 1:
-        result = np.zeros_like(x)
-        M = x.shape
-        for m in range(M):
-            y = x[m]
-            y -= np.max(y)
-            S = np.sum(np.exp(y))
-            result[m] = np.exp(y)/S
-        return result
-    else:
-        x = x - np.max(x)
-        return np.exp(x) / np.sum(np.exp(x))
-
-
-    assert x.shape == orig_shape
-    return x
+    return np.vectorize(
+        lambda y: np.exp(y) / np.sum(np.exp(y)),
+        signature='(n)->(n)'
+    )(optimize(x))
 
 
 def test_softmax_basic():
@@ -76,6 +63,15 @@ def test_softmax():
     your tests be graded.
     """
     print("Running your tests...")
+
+
+def optimize(x):
+    if len(x.shape) > 1:
+        rows_max = np.max(x, axis=1)
+        rows_max = rows_max[:, np.newaxis]
+        return x - rows_max
+    else:
+        return x - np.max(x)
 
 
 if __name__ == "__main__":
