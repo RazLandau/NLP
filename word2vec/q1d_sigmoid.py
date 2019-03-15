@@ -13,9 +13,7 @@ def sigmoid(x):
     Return:
     s -- sigmoid(x)
     """
-    def f(i):
-        return 1. / (1. + np.exp(-i))
-    return np.vectorize(f)(x)
+    return np.vectorize(lambda y: (1 + np.exp(-y)) ** -1)(x)
 
 
 def sigmoid_grad(s):
