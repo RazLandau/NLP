@@ -1,1 +1,1 @@
-
+Implementation the [skip-gram model with negative sampling](https://en.wikipedia.org/wiki/Word2vec) using the [Stanford Sentiment Treebank (SST) dataset](https://nlp.stanford.edu/sentiment/code.html)
