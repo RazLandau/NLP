@@ -26,11 +26,14 @@ def softmax(x):
     Return:
     x -- You are allowed to modify x in-place
     """
-    return np.vectorize(
-        lambda y: np.exp(y) / np.sum(np.exp(y)),
-        signature='(n)->(n)'
-    )(optimize(x))
-
+    orig_shape = x.shape
+    if len(x.shape) > 1:
+        x = x - np.max(x, axis=1)[:, np.newaxis]
+    else:
+        x = x - np.max(x)
+    x = np.exp(x) / np.sum(np.exp(x.T), axis=0)
+    assert x.shape == orig_shape
+    return x
 
 def test_softmax_basic():
     """
@@ -43,6 +46,7 @@ def test_softmax_basic():
     assert np.allclose(test1, ans1, rtol=1e-05, atol=1e-06)
 
     test2 = softmax(np.array([[1001, 1002], [3, 4]]))
+    print(test2)
     ans2 = np.array([
         [0.26894142, 0.73105858],
         [0.26894142, 0.73105858]])
@@ -50,6 +54,7 @@ def test_softmax_basic():
 
     test3 = softmax(np.array([[-1001, -1002]]))
     ans3 = np.array([0.73105858, 0.26894142])
+    print(test3)
     assert np.allclose(test3, ans3, rtol=1e-05, atol=1e-06)
 
     print("You should be able to verify these results by hand!\n")
@@ -63,16 +68,6 @@ def test_softmax():
     your tests be graded.
     """
     print("Running your tests...")
-
-
-def optimize(x):
-    if len(x.shape) > 1:
-        rows_max = np.max(x, axis=1)
-        rows_max = rows_max[:, np.newaxis]
-        return x - rows_max
-    else:
-        return x - np.max(x)
-
 
 if __name__ == "__main__":
     test_softmax_basic()

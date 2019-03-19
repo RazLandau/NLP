@@ -13,7 +13,7 @@ def sigmoid(x):
     Return:
     s -- sigmoid(x)
     """
-    return np.vectorize(lambda y: (1 + np.exp(-y)) ** -1)(x)
+    return 1 / (1+np.exp(-x))
 
 
 def sigmoid_grad(s):
@@ -28,7 +28,7 @@ def sigmoid_grad(s):
     Return:
     ds -- Your computed gradient.
     """
-    return np.vectorize(lambda x: x * (1 - x))(s)
+    return s * (1-s)
 
 
 def test_sigmoid_basic():

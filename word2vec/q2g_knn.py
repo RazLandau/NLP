@@ -18,6 +18,10 @@ def knn(vector, matrix, k=10):
     nearest_idx = []
 
     ### YOUR CODE
+    matrix = normalizeRows(matrix)
+    cossim_factored = matrix.dot(vector) # no need to normalize simalarities since |row|=1 and |vector| is factoring all
+    # argpartition gives k lowest value indices in first k elements, so to get the best (cossim) we need to negate
+    nearest_idx = list(np.argpartition(-cossim_factored, k))[:k]
     ### END YOUR CODE
     return nearest_idx
 

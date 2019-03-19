@@ -15,6 +15,8 @@ def normalizeRows(x):
     """
 
     ### YOUR CODE HERE
+    norm = np.linalg.norm(x, axis=1)[:,np.newaxis]
+    x = np.divide(x, norm, out=np.zeros_like(x), where=norm!=0)
     ### END YOUR CODE
 
     return x
@@ -33,7 +35,7 @@ def softmaxCostAndGradient(predicted, target, outputVectors, dataset):
     """ Softmax cost function for word2vec models
 
     Implement the cost and gradients for one predicted word vector
-    and one target word vector as a building block for word2vec
+    and one target word vector as a building block for i
     models, assuming the softmax prediction function and cross
     entropy loss.
 
@@ -57,7 +59,11 @@ def softmaxCostAndGradient(predicted, target, outputVectors, dataset):
     """
 
     ### YOUR CODE HERE
-    raise NotImplementedError
+    softmax_result = softmax(outputVectors.dot(predicted))
+    cost = -np.log(softmax_result)[target]
+    gradPred = -outputVectors[target,:] + softmax_result.dot(outputVectors) # -u_o + sum_i(SoftMax_i * u_i)
+    grad = softmax_result.dot(predicted) # for all it is (0 + SoftMax_w)*v_c
+    grad[target,:] -= predicted # for u_o it is (-1 + SoftMax_o)*v_c, so need to subtract v_c from _o location
     ### END YOUR CODE
 
     return cost, gradPred, grad
