@@ -37,10 +37,10 @@ def gradcheck_naive(f, x):
         # evaluate function at x+h
         oldval = x[ix]
         x[ix] = oldval + h
-        # random.setstate(rndstate)
+        random.setstate(rndstate)
         fxp,_ = f(x) # f(x + h)
         x[ix] = oldval - h
-        # random.setstate(rndstate)
+        random.setstate(rndstate)
         fxn,_ = f(x) # f(x - h)
         x[ix] = oldval
 
