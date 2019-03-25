@@ -45,8 +45,7 @@ def gradcheck_naive(f, x):
         x[ix] = oldval
 
         # compute the partial derivative
-        numgrad = (fxp - fxn) / (2 * h) # the slope
-        # numgrad = (f(x[ix] + h)[0] - f(x[ix] - h)[0]) / (2 * h)
+        numgrad = (fxp - fxn) / (2 * h)  # the slope
 
         # Compare gradients
         reldiff = abs(numgrad - grad[ix]) / max(1, abs(numgrad), abs(grad[ix]))

@@ -18,7 +18,7 @@ def load_saved_params():
     st = 0
     for f in glob.glob("saved_params_*.npy"):
         iter = int(op.splitext(op.basename(f))[0].split("_")[2])
-        if (iter > st):
+        if iter > st:
             st = iter
 
     if st > 0:
@@ -84,11 +84,11 @@ def sgd(f, x0, step, iterations, postprocessing=None, useSaved=False,
         # You might want to print the progress every few iterations.
 
         cost = None
-        ### YOUR CODE HERE
+        # YOUR CODE HERE
         cost, grad = f(x)
         x -= step*grad
         x = postprocessing(x)
-        ### END YOUR CODE
+        # END YOUR CODE
 
         if iter % PRINT_EVERY == 0:
             if not expcost:
@@ -133,11 +133,8 @@ def your_sanity_checks():
     your additional tests be graded.
     """
     print "Running your sanity checks..."
-    ### YOUR CODE HERE
-    raise NotImplementedError
-    ### END YOUR CODE
 
 
 if __name__ == "__main__":
     sanity_check()
-    # your_sanity_checks()
+    your_sanity_checks()

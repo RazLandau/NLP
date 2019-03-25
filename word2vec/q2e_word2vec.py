@@ -7,6 +7,7 @@ from q1b_softmax import softmax
 from q1e_gradcheck import gradcheck_naive
 from q1d_sigmoid import sigmoid, sigmoid_grad
 
+
 def normalizeRows(x):
     """ Row normalization function
 
@@ -14,10 +15,10 @@ def normalizeRows(x):
     unit length.
     """
 
-    ### YOUR CODE HERE
+    # YOUR CODE HERE
     norm = np.linalg.norm(x, axis=1)[:,np.newaxis]
-    x = np.divide(x, norm, out=np.zeros_like(x), where=norm!=0) # safer than "/", gives 0.0 for norm==0, rather than nan
-    ### END YOUR CODE
+    x = np.divide(x, norm, out=np.zeros_like(x), where=norm != 0)  # safer than "/"
+    # END YOUR CODE
 
     return x
 
@@ -25,7 +26,7 @@ def normalizeRows(x):
 def test_normalize_rows():
     print("Testing normalizeRows...")
     x = normalizeRows(np.array([[3.0, 4.0], [1, 2]]))
-    print(x)
+    # print(x)
     ans = np.array([[0.6,0.8],[0.4472136,0.89442719]])
     assert np.allclose(x, ans, rtol=1e-05, atol=1e-06)
     print("")
@@ -58,13 +59,13 @@ def softmaxCostAndGradient(predicted, target, outputVectors, dataset):
     assignment!
     """
 
-    ### YOUR CODE HERE
+    # YOUR CODE HERE
     softmax_result = softmax(outputVectors.dot(predicted))
     cost = -np.log(softmax_result)[target]
-    gradPred = -outputVectors[target,:] + softmax_result.dot(outputVectors) # -u_o + sum_i(SoftMax_i * u_i)
-    grad = softmax_result[np.newaxis,:].T.dot(predicted[np.newaxis,:])  # for all it is (0 + SoftMax_w)*v_c
-    grad[target,:] -= predicted # for u_o it is (-1 + SoftMax_o)*v_c, so need to subtract v_c from _o location
-    ### END YOUR CODE
+    gradPred = -outputVectors[target, :] + softmax_result.dot(outputVectors) # -u_o + sum_i(SoftMax_i * u_i)
+    grad = softmax_result[np.newaxis, :].T.dot(predicted[np.newaxis, :])  # for all it is (0 + SoftMax_w)*v_c
+    grad[target, :] -= predicted  # for u_o it is (-1 + SoftMax_o)*v_c, so need to subtract v_c from _o location
+    # END YOUR CODE
     return cost, gradPred, grad
 
 
@@ -99,17 +100,25 @@ def negSamplingCostAndGradient(predicted, target, outputVectors, dataset,
     indices = [target]
     indices.extend(getNegativeSamples(target, dataset, K))
 
-    cost = 0.0
-    gradPred = np.zeros(outputVectors.shape)
     grad = np.zeros(outputVectors.shape)
 
-    ### YOUR CODE HERE
+    # YOUR CODE HERE
     sigmoid_result = sigmoid(outputVectors.dot(predicted))
-    cost = None  # TODO
-    gradPred = outputVectors[target]*(sigmoid_result[target]-1) + sigmoid_result[K:].dot(outputVectors[K:])
-    grad = sigmoid_result[:, np.newaxis].dot(predicted[np.newaxis, :])
-    grad[target, :] -= predicted
-    ### END YOUR CODE
+
+    # Jneg(o) = -log(sigma(u_o*v_c))-sum(log(sigma(-u_k*v_c)))
+    cost = -np.log(sigmoid_result[target]) - np.sum(np.log(1-sigmoid_result[indices[1:]]))
+
+    # v_c = sum(sigmoid(u_w*v_c)u_w)-u_o for w=o,k
+    gradPred = -outputVectors[target] + np.sum(
+        sigmoid_result[indices][:, np.newaxis] * outputVectors[indices], axis=0)
+
+    # u_k = sigmoid(u_k*v_c)*u_k
+    for i in indices:
+        grad[i] += sigmoid_result[i] * predicted
+    # u_o = sigmoid(u_o*v_c)*u_o - v_c
+    grad[target] -= predicted
+    return cost, gradPred, grad
+    # END YOUR CODE
 
     return cost, gradPred, grad
 
@@ -141,7 +150,7 @@ def skipgram(currentWord, C, contextWords, tokens, inputVectors, outputVectors,
     cost = 0.0
     gradIn = np.zeros(inputVectors.shape)
     gradOut = np.zeros(outputVectors.shape)
-    ### YOUR CODE HERE
+    # YOUR CODE HERE
     predicted = inputVectors[tokens[currentWord]]
     for contextWord in contextWords:
         target = tokens[contextWord]
@@ -149,7 +158,7 @@ def skipgram(currentWord, C, contextWords, tokens, inputVectors, outputVectors,
         gradIn[tokens[currentWord]] += gradPred_
         gradOut += grad_
         cost += cost_
-    ### END YOUR CODE
+    # END YOUR CODE
 
     return cost, gradIn, gradOut
 
@@ -188,36 +197,36 @@ def word2vec_sgd_wrapper(word2vecModel, tokens, wordVectors, dataset, C,
 def test_word2vec():
     """ Interface to the dataset for negative sampling """
     dataset = type('dummy', (), {})()
+
     def dummySampleTokenIdx():
         return random.randint(0, 4)
 
     def getRandomContext(C):
         tokens = ["a", "b", "c", "d", "e"]
-        return tokens[random.randint(0,4)], \
-            [tokens[random.randint(0,4)] for i in range(2*C)]
+        return tokens[random.randint(0, 4)], \
+            [tokens[random.randint(0, 4)] for _ in range(2*C)]
     dataset.sampleTokenIdx = dummySampleTokenIdx
     dataset.getRandomContext = getRandomContext
 
     random.seed(31415)
     np.random.seed(9265)
     dummy_vectors = normalizeRows(np.random.randn(10,3))
-    dummy_tokens = dict([("a",0), ("b",1), ("c",2),("d",3),("e",4)])
+    dummy_tokens = dict([("a", 0), ("b", 1), ("c", 2), ("d", 3), ("e", 4)])
     print("==== Gradient check for skip-gram ====")
     gradcheck_naive(lambda vec: word2vec_sgd_wrapper(
         skipgram, dummy_tokens, vec, dataset, 5, softmaxCostAndGradient),
         dummy_vectors)
-    # gradcheck_naive(lambda vec: word2vec_sgd_wrapper(
-    #     skipgram, dummy_tokens, vec, dataset, 5, negSamplingCostAndGradient),
-    #     dummy_vectors)
+    gradcheck_naive(lambda vec: word2vec_sgd_wrapper(
+        skipgram, dummy_tokens, vec, dataset, 5, negSamplingCostAndGradient),
+        dummy_vectors)
 
-    # print("\n=== Results ===")
-    # print(skipgram("c", 3, ["a", "b", "e", "d", "b", "c"],
-    #     dummy_tokens, dummy_vectors[:5, :], dummy_vectors[5:, :], dataset))
-    # print(skipgram("c", 1, ["a", "b"],
-    #     dummy_tokens, dummy_vectors[:5, :], dummy_vectors[5:, :], dataset,
-    #     negSamplingCostAndGradient))
+    print("\n=== Results ===")
+    print(skipgram("c", 3, ["a", "b", "e", "d", "b", "c"], dummy_tokens, dummy_vectors[:5, :], dummy_vectors[5:, :],
+                   dataset))
+    print(skipgram("c", 1, ["a", "b"], dummy_tokens, dummy_vectors[:5, :], dummy_vectors[5:, :], dataset,
+                   negSamplingCostAndGradient))
 
 
 if __name__ == "__main__":
-    # test_normalize_rows()
+    test_normalize_rows()
     test_word2vec()

@@ -35,6 +35,7 @@ def softmax(x):
     assert x.shape == orig_shape
     return x
 
+
 def test_softmax_basic():
     """
     Some simple tests to get you started.
@@ -68,6 +69,7 @@ def test_softmax():
     your tests be graded.
     """
     print("Running your tests...")
+
 
 if __name__ == "__main__":
     test_softmax_basic()
