@@ -111,11 +111,11 @@ def eval_neural_lm(eval_data_path):
 
     perplexity = 0
     # YOUR CODE HERE
-    plis = 1
+    plis = 0
     labels = out_word_index
     data = np.array([num_to_word_embedding[k] for k in in_word_index])
     for i in range(len(labels)):
-        plis += np.log(forward(data[i], labels[i], params, dimensions))
+        plis += np.log2(forward(data[i], labels[i], params, dimensions))
     l = plis / num_of_examples
     perplexity += 2**-l
     # END YOUR CODE
