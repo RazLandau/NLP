@@ -63,7 +63,7 @@ def evaluate_ngrams(eval_dataset, trigram_counts, bigram_counts, unigram_counts,
             except KeyError: pass
             qli += (1-lambda1-lambda2) * unigram_counts[sent[i]] / train_token_count
             qlis *= qli
-        l = np.log(qlis) / len(sent)
+        l = np.log2(qlis) / len(sent)
         perplexity += 2**-l
     perplexity /= len(eval_dataset)
     # END YOUR CODE
