@@ -82,15 +82,10 @@ def lm_wrapper(in_word_index, out_word_index, num_to_word_embedding, dimensions,
 
     # Construct the data batch and run you backpropogation implementation
     # YOUR CODE HERE
-    # shuffle_in, shuffle_out = shuffle_training_data(in_word_index, out_word_index)
-    # batch_in, batch_out = shuffle_in[:BATCH_SIZE], shuffle_out[:BATCH_SIZE]
-    # labels = np.array([int_to_one_hot(k,output_dim) for k in batch_out])
-    # data = np.array([num_to_word_embedding[k] for k in batch_in])
-    # cost, grad = forward_backward_prop(data, labels, params, dimensions)
     for i in range(BATCH_SIZE):
-        ix = np.random.randint(0, len(in_word_index)-1)
-        data[i] = num_to_word_embedding[in_word_index[ix]]
-        labels[i] = int_to_one_hot(out_word_index[ix], output_dim)
+        j = np.random.randint(num_of_examples)
+        data[i] = num_to_word_embedding[in_word_index[j]]
+        labels[i] = int_to_one_hot(out_word_index[j], output_dim)
     cost, grad = forward_backward_prop(data, labels, params, dimensions)
     # print(cost)
     # END YOUR CODE
