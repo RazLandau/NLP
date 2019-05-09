@@ -1,0 +1,1 @@
+Implementation of the locally-normalized log-linear [Maximum-Entropy Markov Model](https://en.wikipedia.org/wiki/Maximum-entropy_Markov_model) on the (licensed) [Penn Treebank dataset](https://corochann.com/penn-tree-bank-ptb-dataset-introduction-1456.html) using both greedy and optimized [viterbi](https://en.wikipedia.org/wiki/Viterbi_algorithm) inferences
