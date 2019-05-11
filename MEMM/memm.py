@@ -35,11 +35,23 @@ def extract_features_base(curr_word, next_word, prev_word, prevprev_word, prev_t
     features = {}
     features['word'] = curr_word
     # YOUR CODE HERE
+    import re
     features['next_word'] = next_word
     features['prev_word'] = prev_word
     features['prevprev_word'] = prevprev_word
     features['prev_tag'] = prev_tag
     features['prev_tags'] = prev_tag + prevprev_tag
+    features['prefix_1'] = curr_word[:1]
+    features['prefix_2'] = curr_word[:2]
+    features['prefix_3'] = curr_word[:3]
+    features['prefix_4'] = curr_word[:4]
+    features['suffix_1'] = curr_word[-1:]
+    features['suffix_2'] = curr_word[-2:]
+    features['suffix_3'] = curr_word[-3:]
+    features['suffix_4'] = curr_word[-4:]
+    features['contains_number'] = bool(re.match('.*\d', curr_word))
+    features['contains_uppercase'] = bool(re.match('.*[A-Z]', curr_word))
+    features['contains_hyphen'] = bool(re.match('.*[-]', curr_word))
     # END YOUR CODE
     return features
 
@@ -49,9 +61,8 @@ def extract_features(sentence, i):
     prev_token = sentence[i - 1] if i > 0 else ('<st>', '*')
     prevprev_token = sentence[i - 2] if i > 1 else ('<st>', '*')
     next_token = sentence[i + 1] if i < (len(sentence) - 1) else ('</s>', 'STOP')
-    return extract_features_base(
-        curr_word, next_token[0], prev_token[0], prevprev_token[0], prev_token[1], prevprev_token[1]
-    )
+    return extract_features_base(curr_word, next_token[0], prev_token[0], prevprev_token[0], prev_token[1],
+                                 prevprev_token[1])
 
 
 def vectorize_features(vec, features):
