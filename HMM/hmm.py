@@ -106,19 +106,22 @@ def hmm_eval(test_data, total_tokens, q_tri_counts, q_bi_counts, q_uni_counts, e
 
     def lambda_grid_search(should_run=False):
         if not should_run:
-            return 0.2, 0.4
+            return 0.2, 0.6
         for l1 in range(0, 11, 2):
             for l2 in range(0, 11, 2):
                 lambda1, lambda2 = l1 / 10.0, l2 / 10.0
                 if lambda1 + lambda2 > 1.0:
                     continue
                 acc_viterbi = 0.0
+                total = 0
                 for idx, words_and_tags in enumerate(test_data):
                     sent = [wt[0] for wt in words_and_tags]
                     tags = [wt[1] for wt in words_and_tags]
                     pred = hmm_viterbi(sent, total_tokens, q_tri_counts, q_bi_counts, q_uni_counts, e_word_tag_counts,
                                        e_tag_counts, lambda1, lambda2)
-                    acc_viterbi += pred == tags
+                    for i in range(len(tags)):
+                        total += 1
+                        acc_viterbi += pred[i] == tags[i]
                 acc_viterbi /= len(test_data)
                 print('(%.1f,%.1f,%.1f),%.4f' % (lambda1, lambda2, 1-lambda1-lambda2, acc_viterbi))
     lambda1, lambda2 = lambda_grid_search()
