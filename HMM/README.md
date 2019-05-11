@@ -1,0 +1,1 @@
+Implementation of a [Part-Of-Speech tagger](https://en.wikipedia.org/wiki/Part-of-speech_tagging)  on the (licensed) [Penn Treebank dataset](https://corochann.com/penn-tree-bank-ptb-dataset-introduction-1456.html) using the [Hidden Markov Model](https://en.wikipedia.org/wiki/Hidden_Markov_model) with optimized [Viterbi](https://en.wikipedia.org/wiki/Viterbi_algorithm) inference
