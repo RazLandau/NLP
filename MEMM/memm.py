@@ -204,11 +204,11 @@ def memm_eval(test_data, logreg, vec, index_to_tag_dict, extra_decoding_argument
         # YOUR CODE HERE
         sent = [wt[0] for wt in sen]
         greedy_preds = memm_greedy(sent, logreg, vec, index_to_tag_dict, extra_decoding_arguments)
-        vietrbi_preds = memm_viterbi(sent, logreg, vec, index_to_tag_dict, extra_decoding_arguments)
+        # vietrbi_preds = memm_viterbi(sent, logreg, vec, index_to_tag_dict, extra_decoding_arguments)
         for j, example in enumerate(sen):
             total_words_count += 1
             correct_greedy_preds += greedy_preds[j] == example[1]
-            correct_viterbi_preds += vietrbi_preds[j] == example[1]
+            # correct_viterbi_preds += vietrbi_preds[j] == example[1]
         acc_greedy = float(correct_greedy_preds) / float(total_words_count)
         acc_viterbi = float(correct_viterbi_preds) / float(total_words_count)
         # END YOUR CODE
@@ -243,8 +243,8 @@ def build_tag_to_idx_dict(train_sentences):
 if __name__ == "__main__":
     my_max_sents = 550
     full_flow_start = time.time()
-    train_sents = read_conll_pos_file("Penn_Treebank/train.gold.conll")[:my_max_sents]
-    dev_sents = read_conll_pos_file("Penn_Treebank/dev.gold.conll")[:my_max_sents]
+    train_sents = read_conll_pos_file("Penn_Treebank/train.gold.conll")#[:my_max_sents]
+    dev_sents = read_conll_pos_file("Penn_Treebank/dev.gold.conll")#[:my_max_sents]
 
     vocab = compute_vocab_count(train_sents)
     train_sents = preprocess_sent(vocab, train_sents)
@@ -276,7 +276,7 @@ if __name__ == "__main__":
     dev_examples_vectorized = all_examples_vectorized[num_train_examples:]
     print "Done"
 
-    my_max_iter = 1
+    my_max_iter = 128
     logreg = linear_model.LogisticRegression(
         multi_class='multinomial', max_iter=my_max_iter, solver='lbfgs', C=100000, verbose=1)
     print "Fitting..."
