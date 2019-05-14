@@ -129,36 +129,32 @@ def memm_viterbi(sent, logreg, vec, index_to_tag_dict, extra_decoding_arguments)
     def S(k):
         if k < 0:
             return ['*']
-        if sent[k] in extra_decoding_arguments['word_to_tags_dict']:
-            return extra_decoding_arguments['word_to_tags_dict'][sent[k]]
+        word = sent[k]
+        word_to_tags_dict = extra_decoding_arguments['word_to_tags_dict']
+        if word in word_to_tags_dict:
+            return word_to_tags_dict[word]
         return list(index_to_tag_dict.values())
 
     n = len(sent)
     pruning_const = 0.0
     pi = {(-1, '*', '*'): 1}
     bp = dict()
-    prevprev_word = '<st>'
-    prev_word = '<st>'
-    curr_word = sent[0]
-    next_word = sent[1] if n > 1 else '</s>'
     for k in range(n):
         for v in S(k):
             for u in S(k-1):
                 t_val_max = -1
+                features = extract_features(zip(sent, predicted_tags), k)
+                features_vec = vectorize_features(vec, features)
+                probabilities = logreg.predict_proba(features_vec)[0]
                 for t in S(k-2):
-                    if (k-1, t, u) not in pi or pi[(k-1, t, u)] <= pruning_const:
+                    if (k-1, t, u) not in pi:  # or pi[(k-1, t, u)] <= pruning_const:
                         continue
-                    features = extract_features_base(curr_word, next_word, prev_word, prevprev_word, u, t)
-                    features_vec = vectorize_features(vec, features)
-                    probabilities = logreg.predict_proba(features_vec)
-                    t_val = pi[(k-1, t, u)] * np.amax(probabilities)
+                    probability = 1 if t == '*' else probabilities[tag_to_idx_dict[t]]
+                    t_val = pi[(k-1, t, u)] * probability
                     if t_val > t_val_max:
                         pi[(k, u, v)] = t_val
                         bp[(k, u, v)] = t
                         t_val_max = t_val
-        prev_word = curr_word
-        curr_word = next_word
-        next_word = sent[k + 1] if k < n - 1 else '</s>'
 
     y_n, y_n_1, u_v_val_max = None, None, -1
     for v in S(n-1):
