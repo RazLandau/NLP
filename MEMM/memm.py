@@ -18,7 +18,7 @@ def build_extra_decoding_arguments(train_sents):
         for token in sent:
             word, tag = token[0], token[1]
             if word not in word_to_tags_dict:
-                word_to_tags_dict[word] = set(tag)
+                word_to_tags_dict[word] = {tag}
             else:
                 word_to_tags_dict[word].add(tag)
     extra_decoding_arguments['word_to_tags_dict'] = word_to_tags_dict
@@ -41,17 +41,26 @@ def extract_features_base(curr_word, next_word, prev_word, prevprev_word, prev_t
     features['prevprev_word'] = prevprev_word
     features['prev_tag'] = prev_tag
     features['prev_tags'] = prev_tag + prevprev_tag
-    features['prefix_1'] = curr_word[:1]
-    features['prefix_2'] = curr_word[:2]
-    features['prefix_3'] = curr_word[:3]
-    features['prefix_4'] = curr_word[:4]
-    features['suffix_1'] = curr_word[-1:]
-    features['suffix_2'] = curr_word[-2:]
-    features['suffix_3'] = curr_word[-3:]
-    features['suffix_4'] = curr_word[-4:]
-    features['contains_number'] = bool(re.match('.*\d', curr_word))
-    features['contains_uppercase'] = bool(re.match('.*[A-Z]', curr_word))
-    features['contains_hyphen'] = bool(re.match('.*[-]', curr_word))
+    # features['prefix_1'] = curr_word[:1]
+    # features['prefix_2'] = curr_word[:2]
+    # features['prefix_3'] = curr_word[:3]
+    # features['prefix_4'] = curr_word[:4]
+    # features['suffix_1'] = curr_word[-1:]
+    # features['suffix_2'] = curr_word[-2:]
+    # features['suffix_3'] = curr_word[-3:]
+    # features['suffix_4'] = curr_word[-4:]
+    # features['contains_number'] = bool(re.match('.*\d', curr_word))
+    # features['contains_uppercase'] = bool(re.match('.*[A-Z]', curr_word))
+    # features['contains_hyphen'] = bool(re.match('.*[-]', curr_word))
+    # features['initCap'] = 1 if re.match(r"^[A-Z]", curr_word[0]) else 0
+    # features['hasNumeric'] = 1 if re.search(r"\d", curr_word[0]) else 0
+    # features['hasDash'] = 1 if re.search(r"-", curr_word[0]) else 0
+    # features['allCaps'] = 1 if re.search(r"^[A-Z]+$", curr_word[0]) else 0
+    # #### suffixes + prefixes
+    # if len(curr_word) > 5:
+    #     for i in xrange(4):
+    #         features['prefix' + str(i + 1)] = curr_word[:i + 1]
+    #         features['suffix' + str(i + 1)] = curr_word[- (i + 1):]
     # END YOUR CODE
     return features
 
@@ -100,23 +109,11 @@ def memm_greedy(sent, logreg, vec, index_to_tag_dict, extra_decoding_arguments):
     predicted_tags = [""] * (len(sent))
     # YOUR CODE HERE
     n = len(sent)
-    prevprev_word = '<st>'
-    prev_word = '<st>'
-    curr_word = sent[0]
-    next_word = sent[1] if n > 1 else '</s>'
-    prevprev_tag = '*'
-    prev_tag = '*'
     for i in range(n):
-        features = extract_features_base(curr_word, next_word, prev_word, prevprev_word, prev_tag, prevprev_tag)
+        features = extract_features(zip(sent, predicted_tags), i)
         pred = logreg.predict(vectorize_features(vec, features))
         tag = index_to_tag_dict[int(pred)]
         predicted_tags[i] = tag
-        prevprev_word = prev_word
-        prev_word = curr_word
-        curr_word = next_word
-        next_word = sent[i+1] if i < n-1 else '</s>'
-        prevprev_tag = prev_tag
-        prev_tag = tag
     # END YOUR CODE
     return predicted_tags
 
@@ -203,12 +200,13 @@ def memm_eval(test_data, logreg, vec, index_to_tag_dict, extra_decoding_argument
     for i, sen in enumerate(test_data):
         # YOUR CODE HERE
         sent = [wt[0] for wt in sen]
+        tags = [wt[1] for wt in sen]
         greedy_preds = memm_greedy(sent, logreg, vec, index_to_tag_dict, extra_decoding_arguments)
         # vietrbi_preds = memm_viterbi(sent, logreg, vec, index_to_tag_dict, extra_decoding_arguments)
-        for j, example in enumerate(sen):
+        for j in range(len(sen)):
             total_words_count += 1
-            correct_greedy_preds += greedy_preds[j] == example[1]
-            # correct_viterbi_preds += vietrbi_preds[j] == example[1]
+            correct_greedy_preds += greedy_preds[j] == tags[1]
+            # correct_viterbi_preds += vietrbi_preds[j] == tags[1]
         acc_greedy = float(correct_greedy_preds) / float(total_words_count)
         acc_viterbi = float(correct_viterbi_preds) / float(total_words_count)
         # END YOUR CODE
@@ -217,7 +215,8 @@ def memm_eval(test_data, logreg, vec, index_to_tag_dict, extra_decoding_argument
             if acc_greedy == 0 and acc_viterbi == 0:
                 raise NotImplementedError
             eval_end_timer = time.time()
-            print str.format("Sentence index: {} greedy_acc: {}    Viterbi_acc:{} , elapsed: {} ", str(i), str(acc_greedy), str(acc_viterbi) , str (eval_end_timer - eval_start_timer))
+            print str.format("Sentence index: {} greedy_acc: {}    Viterbi_acc:{} , elapsed: {} ", str(i),
+                             str(acc_greedy), str(acc_viterbi), str (eval_end_timer - eval_start_timer))
             eval_start_timer = time.time()
 
     acc_greedy = float(correct_greedy_preds) / float(total_words_count)
