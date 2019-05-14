@@ -198,11 +198,11 @@ def memm_eval(test_data, logreg, vec, index_to_tag_dict, extra_decoding_argument
         sent = [wt[0] for wt in sen]
         tags = [wt[1] for wt in sen]
         greedy_preds = memm_greedy(sent, logreg, vec, index_to_tag_dict, extra_decoding_arguments)
-        # vietrbi_preds = memm_viterbi(sent, logreg, vec, index_to_tag_dict, extra_decoding_arguments)
+        vietrbi_preds = memm_viterbi(sent, logreg, vec, index_to_tag_dict, extra_decoding_arguments)
         for j in range(len(sen)):
             total_words_count += 1
-            correct_greedy_preds += greedy_preds[j] == tags[1]
-            # correct_viterbi_preds += vietrbi_preds[j] == tags[1]
+            correct_greedy_preds += greedy_preds[j] == tags[j]
+            correct_viterbi_preds += vietrbi_preds[j] == tags[j]
         acc_greedy = float(correct_greedy_preds) / float(total_words_count)
         acc_viterbi = float(correct_viterbi_preds) / float(total_words_count)
         # END YOUR CODE
