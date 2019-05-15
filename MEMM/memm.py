@@ -138,8 +138,10 @@ def memm_viterbi(sent, logreg, vec, index_to_tag_dict, extra_decoding_arguments)
 
     def q():
         predicted_tags[k] = v
-        k > 0 and predicted_tags.insert(k-1, u)
-        k > 1 and predicted_tags.insert(k-2, t)
+        if k > 0:
+            predicted_tags[k-1] = u
+        if k > 1:
+            predicted_tags[k-2] = t
         return logreg.predict_proba(
             vectorize_features(
                 vec, extract_features(
