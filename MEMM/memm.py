@@ -125,48 +125,47 @@ def memm_viterbi(sent, logreg, vec, index_to_tag_dict, extra_decoding_arguments)
     """
     predicted_tags = [""] * (len(sent))
     # YOUR CODE HERE
+    n = len(sent)
 
-    def S(k):
-        if k < 0:
+    def S(i):
+        if i < 0:
             return ['*']
-        word = sent[k]
+        word = sent[i]
         word_to_tags_dict = extra_decoding_arguments['word_to_tags_dict']
         if word in word_to_tags_dict:
             return word_to_tags_dict[word]
         return list(index_to_tag_dict.values())
 
-    n = len(sent)
-    pruning_const = 0.0
+    def q():
+        predicted_tags[k] = v
+        k > 0 and predicted_tags.insert(k-1, u)
+        k > 1 and predicted_tags.insert(k-2, t)
+        return logreg.predict_proba(
+            vectorize_features(
+                vec, extract_features(
+                    zip(
+                        sent, predicted_tags
+                    ), k
+                )
+            )
+        )[0][tag_to_idx_dict[v]]
+
     pi = {(-1, '*', '*'): 1}
     bp = dict()
     for k in range(n):
         for v in S(k):
             for u in S(k-1):
                 t_val_max = -1
-                features = extract_features(zip(sent, predicted_tags), k)
-                features_vec = vectorize_features(vec, features)
-                probabilities = logreg.predict_proba(features_vec)[0]
                 for t in S(k-2):
-                    if (k-1, t, u) not in pi:  # or pi[(k-1, t, u)] <= pruning_const:
-                        continue
-                    probability = 1 if t == '*' else probabilities[tag_to_idx_dict[t]]
-                    t_val = pi[(k-1, t, u)] * probability
+                    t_val = pi[k-1, t, u] * q()
                     if t_val > t_val_max:
                         pi[(k, u, v)] = t_val
                         bp[(k, u, v)] = t
                         t_val_max = t_val
 
-    y_n, y_n_1, u_v_val_max = None, None, -1
-    for v in S(n-1):
-        for u in S(n-2):
-            if (n-1, u, v) not in pi:
-                continue
-            u_v_val = pi[(n-1, u, v)]
-            if u_v_val > u_v_val_max:
-                y_n = v
-                y_n_1 = u
-                u_v_val_max = u_v_val
-    predicted_tags[n-1], predicted_tags[n-2] = y_n, y_n_1
+    predicted_tags[n-1], predicted_tags[n-2] = max({
+        (v, u): pi[(n-1, u, v)] for v in S(n-1) for u in S(n-2)
+    }, key=lambda x: x[0])
     for k in range(n-3, -1, -1):
         predicted_tags[k] = bp[(k+2), predicted_tags[k+1], predicted_tags[k+2]]
     # END YOUR CODE
@@ -236,10 +235,9 @@ def build_tag_to_idx_dict(train_sentences):
 
 
 if __name__ == "__main__":
-    my_max_sents = 550
     full_flow_start = time.time()
-    train_sents = read_conll_pos_file("Penn_Treebank/train.gold.conll")#[:my_max_sents]
-    dev_sents = read_conll_pos_file("Penn_Treebank/dev.gold.conll")#[:my_max_sents]
+    train_sents = read_conll_pos_file("Penn_Treebank/train.gold.conll")
+    dev_sents = read_conll_pos_file("Penn_Treebank/dev.gold.conll")
 
     vocab = compute_vocab_count(train_sents)
     train_sents = preprocess_sent(vocab, train_sents)
