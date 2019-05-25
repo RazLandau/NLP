@@ -32,7 +32,7 @@
 #    Prep = preposition
 
 #   CordConj = Coordinating Conjunction
-#   SubConj = Subordinate Conjunction
+#        = Subordinate Conjunction
 #   IntrVerb  = IntransitiveVerb
 #   AntIt = Anticipatory It (preparatory subject), subject is realized as a clause
 #   RealizIt = that in use following Anticipatory followed by the realizing clause
@@ -46,26 +46,38 @@
 #   AuxLink = Linking verb
 #   AuxProg = Auxillary vern in a progressive aspect
 #   VerbProg = Progressive verb
+#   VerbPTS = present tense verb singular
+#   VerbPTP = present tense verb plural
+#   DetPlural = determiner of plurals only (the)
 
-1	S	NP VP ## q_a q_b q_c q_d q_e q_f q_g q_h q_i q_j
-1	NP	Det Noun # ## q_a q_b q_c q_d q_e q_f q_g q_i q_j
-1   NP  PropN # ## q_a q_b q_e q_h q_i q_j
-0.1 NP  NP  CordConj    NP # ## q_b
+
+1	S	NP VP ## q_a q_b q_c q_d q_e q_f q_g q_h q_i q_j q_B_c
+100	NP	Det Noun # ## q_a q_b q_c q_d q_e q_f q_g q_i q_j q_B_b q_B_c q_B_e
+1   NP  PropN # ## q_a q_b q_e q_h q_i q_j q_B_c
+0.1 NP  NP  CordConj    NP # ## q_b 
 0.5	NP	NP PP ## q_g
 
-1	VP	Verb NP ## q_a q_e q_f q_j
+1	VP	Verb NP ## q_a q_e q_f q_j q_B_c
 0.5   VP  Verb2 PP ## q_g some verbs (Verb2) require preposition (worked - on) while others dont but this will remain valid (will work as if )
 0.1 VP Verb  CordConj    VP # ## q_b
 0.4   VP  VerbThatClause  SubConj S # ## q_d q_j
 0.2   VP  IntrVerb # ## q_b q_c q_d
 1	PP	Prep NP
-0.2   S   AntIt   VP  RealizIt    S  # ## q_e
+0.1   S   AntIt   VP  RealizIt    S  # ## q_e
 1   NP  Det AdjP Noun # ## q_f
 1   AdjP    Adj #
 1   AdjP    Adv Adj # ## q_f 
-0.5   Adv Adv Adv # ## q_f (70) - this allowes chaining adverbs (very very very...)
+0.2   Adv Adv Adv # ## q_f (70) - this allowes chaining adverbs (very very very...)
 1   VP  AuxLink     Adj # ## q_h
 1   VP  AuxProg     VerbProg  NP # ## q_i
+
+0.2   NP  NP  SubConj Verb NP # the pickle kissed the president that ate a sandwich, relative clase w.o. subject (ommit clause subject) q_B_a
+0.2   NP NP SubConj NP Verb # the pickle kissed the sandwich that the president ate, relative clase w.o. subject (ommit clause object) q_B_b Q_B_b (2)
+0.2  NP NP SubConj NP VerbThatClause SubConj NP Verb # the pickle kissed the sandwich that the president thought that Sally ate (ommit claus's  )  q_B_c (5)
+
+0.1 S     DetPlural NounPlural VerbPTP NP  ## q_B_d
+0.1 S     NP VerbPTS NP ## q_B_e
+0.1 S     NP CordConj NP VerbPTP NP ## q_B_f
 
 # Vocabulary.  Your program can see that "ate" is a terminal
 # symbol because there exists no rule for rewriting it.
@@ -73,27 +85,33 @@
 # terminals, like "chief of staff") is called a "preterminal."  Notice 
 # that a preterminal is a special kind of nonterminal.
 
-1	Verb	ate ## q_a q_b q_e q_f
+1	Verb	ate ## q_a q_b q_e q_f q_B_b
 1	Verb	wanted ## q_b
-1	Verb	kissed
+1	Verb	kissed ## q_B_b
 1	Verb	understood
 1	Verb	pickled
 1	Verb    perplexed # ## q_e
 1   Verb2   worked # ## q_g
-1    VerbProg    eating # ## q_i
+1   VerbProg    eating # ## q_i
 1   Verb    is # when its a "helping verb", like Sally is a sandwich ## q_j
 
-1	Det	the ## q_b q_d q_e q_f q_g q_j
+1   VerbPTP choose ## q_B_d
+1   VerbPTS chooses
+
+100	Det	the ## q_b q_d q_e q_f q_g q_j q_B_b q_B_d q_B_e
 1	Det	a ## q_a q_b q_d q_e q_f q_i q_j
 1	Det	every # ## q_g
+1   DetPlural the ## q_B_d
 
-1	Noun	president ## q_b q_c q_d q_e q_f q_g q_j
-1	Noun	sandwich ## q_a q_b q_d q_e q_f q_i q_j
-1	Noun	pickle
-1	Noun	chief of staff
+100	Noun	president ## q_b q_c q_d q_e q_f q_g q_j Q_B_b q_B_d q_B_e
+1	Noun	sandwich ## q_a q_b q_d q_e q_f q_i q_j Q_B_b
+1	Noun	pickle ## q_B_b
+100	Noun	chief of staff #  q_B_e
 1	Noun	floor
 1   Noun    proposal ## q_g
 1   Noun    desk ## q_g
+
+1   NounPlural    citizens
 
 1	Adj	fine
 1	Adj	delicious
