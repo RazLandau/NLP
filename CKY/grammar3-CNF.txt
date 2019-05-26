@@ -1,0 +1,183 @@
+# Symbols in the grammar are case-sensitive.
+# 
+# This grammar uses a convention that
+#    - terminals are lowercase          (president)
+#    - preterminals are capitalized     (Noun)
+#    - other nonterminals are all-caps  (NP)
+# 
+# This convention just makes grammars more readable to humans.  Thus:
+#
+#    - When *you* are writing grammars, you should 
+#      follow this convention unless you have a good reason not to.  
+#
+#    - But the  *program* should still work with grammars that don't
+#      follow this convention.  So how can the program reliably tell
+#      the difference between terminal and nonterminal symbols?  If
+#      there is at least one rule for rewriting a symbol, then that
+#      symbol is a nonterminal and should be rewritten.
+#######################
+
+# Rules for creating full sentences.
+
+1000	ROOT	S .
+1	ROOT	S !
+## 1	ROOT	is it true that S ?     # mixing terminals and nonterminals is ok.
+1	ROOT	is is|it.true.that.S.?     # mixing terminals and nonterminals is ok.
+1	is|it.true.that.S.?	it is.it|true.that.S.?     # mixing terminals and nonterminals is ok.
+1	is.it|true.that.S.?	true is.it.true|that.S.?     # mixing terminals and nonterminals is ok.
+1	is.it.true|that.S.?	that is.it.true.that|S.?     # mixing terminals and nonterminals is ok.
+1	is.it.true.that|S.?	S   ?     # mixing terminals and nonterminals is ok.
+
+# The basic grammar rules.  Here's what the abbreviations stand for:
+#    S  = sentence
+#    NP = noun phrase
+#    VP = verb phrase
+#    PP = prepositional phrase
+#    Det = determiner (sometimes called "article")
+#    Prep = preposition
+
+#   CordConj = Coordinating Conjunction
+#        = Subordinate Conjunction
+#   IntrVerb  = IntransitiveVerb
+#   AntIt = Anticipatory It (preparatory subject), subject is realized as a clause
+#   RealizIt = that in use following Anticipatory followed by the realizing clause
+#   VerbThatClause = a verb taking a that clause; reporting verbs #
+#   Adv = Adverb
+#   Adj = adjective
+#   Pron = pronoun
+#   PrepOn = preposition "on" - this is used for "on" following verbs that takes on as following preposition (worked on the proposal)
+#   Verb2 = Verb followed by "on" as a preposition that doesn't change the meaning of the verb
+#   Aux = auxillary vert
+#   AuxLink = Linking verb
+#   AuxProg = Auxillary vern in a progressive aspect
+#   VerbProg = Progressive verb
+#   VerbPTS = present tense verb singular
+#   VerbPTP = present tense verb plural
+#   DetPlural = determiner of plurals only (the)
+
+
+1	S	NP VP ## q_a q_b q_c q_d q_e q_f q_g q_h q_i q_j q_B_c
+1	NP	Det Noun # ## q_a q_b q_c q_d q_e q_f q_g q_i q_j q_B_b q_B_c q_B_e
+1   NP  PropN # ## q_a q_b q_e q_h q_i q_j q_B_c
+## 0.1 NP  NP  CordConj    NP # ## q_b
+0.1 NP  NP  NP|CordConj.NP # ## q_b
+1 NP|CordConj.NP  CordConj  NP  # ## q_b0.5	NP	NP PP ## q_g
+
+1	VP	Verb NP ## q_a q_e q_f q_j q_B_c
+0.5   VP  Verb2 PP ## q_g some verbs (Verb2) require preposition (worked - on) while others dont but this will remain valid (will work as if )
+## 0.1 VP Verb  CordConj    VP # ## q_b
+0.1 VP Verb  Verb|CordConj.VP # ## q_b
+1   Verb|CordConj.VP    CordConj    VP  # ## q_b
+## 0.4   VP  VerbThatClause  SubConj S # ## q_d q_j
+0.4   VP  VerbThatClause  VerbThatClause|SubConj.S # ## q_d q_j
+1   VerbThatClause|SubConj.S    SubConj S   # ## q_d q_j
+0.2   VP  IntrVerb # ## q_b q_c q_d
+1	PP	Prep NP
+## 0.2   S   AntIt   VP  RealizIt    S  # ## q_e
+0.2   S   AntIt   AntIt|VP.RealizIt.S  # ## q_e
+1   AntIt|VP.RealizIt.S   VP   AntIt.VP|RealizIt.S  # ## q_e
+1   AntIt.VP|RealizIt.S   RealizIt  S  # ## q_e
+## 1   NP  Det AdjP Noun # ## q_f
+1   NP  Det Det|AdjP.Noun # ## q_f
+1   Det|AdjP.Noun  AdjP Noun # ## q_f
+1   AdjP    Adj #
+1   AdjP    Adv Adj # ## q_f 
+0.1   Adv Adv Adv # ## q_f (70) - this allowes chaining adverbs (very very very...)
+1   VP  AuxLink     Adj # ## q_h
+## 1   VP  AuxProg     VerbProg  NP # ## q_i
+1   VP  AuxProg     AuxProg|VerbProg.NP # ## q_i
+1   AuxProg|VerbProg.NP  VerbProg   NP
+
+## 0.2   NP  NP  SubConj Verb NP # the pickle kissed the president that ate a sandwich, relative clase w.o. subject (ommit clause subject) q_B_a
+0.2   NP  NP  NP|SubConj.Verb.NP
+1   NP|SubConj.Verb.NP  SubConj NP.SubConj|Verb.NP
+1   NP.SubConj|Verb.NP  Verb    NP
+## 0.2   NP NP SubConj NP Verb # the pickle kissed the sandwich that the president ate, relative clase w.o. subject (ommit clause object) q_B_b Q_B_b (2)
+0.2   NP NP NP|SubConj.NP.Verb
+1   NP|SubConj.NP.Verb  SubConj NP.SubConj|NP.Verb
+1   NP.SubConj|NP.Verb  NP  Verb
+## 0.2  NP NP SubConj NP VerbThatClause SubConj NP Verb # the pickle kissed the sandwich that the president thought that Sally ate (ommit claus's  )  q_B_c (5)
+0.2   NP NP NP|SubConj.NP.VerbThatClause.SubConj.NP.Verb
+1   NP|SubConj.NP.VerbThatClause.SubConj.NP.Verb    SubConj NP.SubConj|NP.VerbThatClause.SubConj.NP.Verb
+1   NP.SubConj|NP.VerbThatClause.SubConj.NP.Verb    NP  NP.SubConj.NP|VerbThatClause.SubConj.NP.Verb
+1   NP.SubConj.NP|VerbThatClause.SubConj.NP.Verb    VerbThatClause  NP.SubConj.NP.VerbThatClause|SubConj.NP.Verb
+1   NP.SubConj.NP.VerbThatClause|SubConj.NP.Verb    SubConj NP.SubConj.NP.VerbThatClause.SubConj|NP.Verb
+1   NP.SubConj.NP.VerbThatClause.SubConj|NP.Verb    NP  Verb
+
+## 0.05 S  DetPlural NounPlural VerbPTP NP  ## q_B_d
+0.05 S  DetPlural DetPlural|NounPlural.VerbPTP.NP
+1   DetPlural|NounPlural.VerbPTP.NP NounPlural  DetPlural.NounPlural|VerbPTP.NP
+1   DetPlural.NounPlural|VerbPTP.NP VerbPTP NP
+## 0.05 S  NP VerbPTS NP ## q_B_e
+0.05 S  NP NP|VerbPTS.NP
+1   NP|VerbPTS.NP   VerbPTS NP
+## 0.05 S  NP CordConj NP VerbPTP NP ## q_B_f
+0.05 S  NP NP|CordConj.NP.VerbPTP.NP
+1   NP|CordConj.NP.VerbPTP.NP   CordConj    NP.CordConj|NP.VerbPTP.NP
+1   NP.CordConj|NP.VerbPTP.NP   NP  NP.CordConj.NP|VerbPTP.NP
+1   NP.CordConj.NP|VerbPTP.NP   VerbPTP NP
+
+# Vocabulary.  Your program can see that "ate" is a terminal
+# symbol because there exists no rule for rewriting it.
+# Any symbol that can rewrite as a terminal (or a string of 
+# terminals, like "chief of staff") is called a "preterminal."  Notice 
+# that a preterminal is a special kind of nonterminal.
+
+1	Verb	ate ## q_a q_b q_e q_f q_B_b
+1	Verb	wanted ## q_b
+1	Verb	kissed ## q_B_b
+1	Verb	understood
+1	Verb	pickled
+1	Verb    perplexed # ## q_e
+1   Verb2   worked # ## q_g
+1   VerbProg    eating # ## q_i
+1   Verb    is # when its a "helping verb", like Sally is a sandwich ## q_j
+
+1   VerbPTP choose ## q_B_d
+1   VerbPTS chooses
+
+1	Det	the ## q_b q_d q_e q_f q_g q_j q_B_b q_B_d q_B_e
+1	Det	a ## q_a q_b q_d q_e q_f q_i q_j
+1	Det	every # ## q_g
+1   DetPlural the ## q_B_d
+
+1	Noun	president ## q_b q_c q_d q_e q_f q_g q_j Q_B_b q_B_d q_B_e
+1	Noun	sandwich ## q_a q_b q_d q_e q_f q_i q_j Q_B_b
+1	Noun	pickle ## q_B_b
+## 1	Noun	chief of staff
+1	Noun	chief chief|of.staff #  q_B_e
+1	chief|of.staff of staff #  q_B_e
+1	Noun	floor
+1   Noun    proposal ## q_g
+1   Noun    desk ## q_g
+
+1   NounPlural    citizens
+
+1	Adj	fine
+1	Adj	delicious
+1	Adj	pickled
+1   Adj perplexed # a past participle ## q_f q_g
+1   Adj lazy # q_h
+
+1	Prep	with
+1	Prep	on ## q_g
+1	Prep	under
+1	Prep	in
+1   PrepOn  on ## q_g
+
+1   PropN    Sally ## q_a q_b
+
+1   CordConj    and ## q_b
+
+1   SubConj     that ## q_d
+1   RealizIt    that ## q_e
+1   IntrVerb    sighed # ## q_c
+
+1   VerbThatClause    thought # ## q_d
+
+1   AntIt   it ## q_egit 
+
+1   Adv very ## q_f 
+
+1   AuxLink is ## q_h
+1   AuxProg is ## q_i
