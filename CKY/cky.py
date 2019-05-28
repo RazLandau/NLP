@@ -60,8 +60,7 @@ def cnf_cky(pcfg, sent):
 def non_cnf_cky(pcfg, sent):
     # YOUR CODE HERE
 
-    def unarize_terminals(lhs, i):
-        rhs = pcfg._rules[lhs][i][0]
+    def unarize_terminals(lhs, i, rhs):
         if len(rhs) == 1:
             return
         lhs_1 = rhs[0].upper()
@@ -71,13 +70,12 @@ def non_cnf_cky(pcfg, sent):
         pcfg.add_rule(lhs_1, rhs_1, 1)
         pcfg.add_rule(lhs_2, rhs_2, 1)
         pcfg._rules[lhs][i] = ([lhs_1, lhs_2], 1)
-        # print(pcfg._rules)
-        unarize_terminals(lhs_2, 0)
+        unarize_terminals(lhs_2, 0, rhs_2)
 
     for lhs in pcfg._rules.keys():
         for i, (rhs, prob) in enumerate(pcfg._rules[lhs]):
             if pcfg.is_terminal(rhs[0]):
-                unarize_terminals(lhs, i)
+                unarize_terminals(lhs, i, rhs)
     res = cnf_cky(pcfg, sent)
     if res != "FAILED TO PARSE!":
         return res
@@ -91,28 +89,18 @@ def print_tree(cky_dict, subtreerange, tree_root):
     range_high_left = cky_dict[(subtreerange[0], subtreerange[1], tree_root)][1]
     range_low_left = subtreerange[0]
     if range_low_left == range_high_right:
-        return tree_root, cky_dict[(subtreerange[0], subtreerange[1], tree_root)][0][0][0]
+        return '(' + str(tree_root) + ' ' + str(cky_dict[(subtreerange[0], subtreerange[1], tree_root)][0][0][0]) + ')'
     left_root = cky_dict[(subtreerange[0], subtreerange[1], tree_root)][0][0][0]
     right_root = cky_dict[(subtreerange[0], subtreerange[1], tree_root)][0][0][1]
-    return "(" + tree_root + " " + str(print_tree(cky_dict, (range_low_left, range_high_left), left_root)) + " " + \
-           str(print_tree(cky_dict, (range_low_right, range_high_right), right_root)) + ")"
+    return "(" + tree_root + " " + print_tree(cky_dict, (range_low_left, range_high_left), left_root) + " " + \
+           print_tree(cky_dict, (range_low_right, range_high_right), right_root) + ")"
 
 
 if __name__ == '__main__':
     import sys
-    cnf_pcfg = PCFG.from_file_assert("grammar3-CNF.txt", assert_cnf=False)
-    # non_cnf_pcfg = PCFG.from_file_assert("grammar2.txt")
-    sents_to_parse = load_sents_to_parse("sents_from_grammer3-CNF.txt")
+    cnf_pcfg = PCFG.from_file_assert(sys.argv[1], assert_cnf=True)
+    non_cnf_pcfg = PCFG.from_file_assert(sys.argv[2])
+    sents_to_parse = load_sents_to_parse(sys.argv[3])
     for sent in sents_to_parse:
-        print 'sent:', sent
-        print 'cnf_cky result:', cnf_cky(cnf_pcfg, sent)
-        # print non_cnf_cky(non_cnf_pcfg, sent)
-
-    # print cnf_cky(
-    #     PCFG.from_file_assert("cnf_grammar.txt"),
-    #         "a fine sandwich understood the president in a chief on every pickled perplexed delicious fine president"
-    # )
-    # print non_cnf_cky(
-    #     PCFG.from_file_assert("non_cnf_grammar.txt"),
-    #     "a fine sandwich"
-    # )
+        print cnf_cky(cnf_pcfg, sent)
+        print non_cnf_cky(non_cnf_pcfg, sent)
