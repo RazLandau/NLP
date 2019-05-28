@@ -49,7 +49,8 @@
 #   VerbPTS = present tense verb singular
 #   VerbPTP = present tense verb plural
 #   DetPlural = determiner of plurals only (the)
-
+#   AntVerb = a verb that can be used in anticipatory-it sentence
+#   AntVP = a verb phrase that can be used in anticipatory-it sentence
 
 1	S	NP VP ## q_a q_b q_c q_d q_e q_f q_g q_h q_i q_j q_B_c
 1	NP	Det Noun # ## q_a q_b q_c q_d q_e q_f q_g q_i q_j q_B_b q_B_c q_B_e
@@ -63,7 +64,8 @@
 0.4   VP  VerbThatClause  SubConj S # ## q_d q_j
 0.2   VP  IntrVerb # ## q_b q_c q_d
 1	PP	Prep NP
-0.2   S   AntIt   VP  RealizIt    S  # ## q_e
+0.2   S   AntIt   AntVP  RealizIt    S  # ## q_e
+1   AntVP   AntVerb NP
 1   NP  Det AdjP Noun # ## q_f
 1   AdjP    Adj #
 1   AdjP    Adv Adj # ## q_f 
@@ -141,3 +143,5 @@
 
 1   AuxLink is ## q_h
 1   AuxProg is ## q_i
+
+1   AntVerb perplexed

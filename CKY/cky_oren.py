@@ -75,11 +75,9 @@ def print_tree(cky_dict, subtreerange, tree_root):
 
 
 if __name__ == '__main__':
-    import sys
-    cnf_pcfg = PCFG.from_file_assert("cnf_grammar.txt", assert_cnf=True)
-    # non_cnf_pcfg = PCFG.from_file_assert(sys.argv[2])
-    sents_to_parse = load_sents_to_parse("sents.txt")
+    cnf_pcfg = PCFG.from_file_assert("grammar3-CNF.txt", assert_cnf=False)
+    # non_cnf_pcfg = PCFG.from_file_assert("grammar2.txt")
+    sents_to_parse = load_sents_to_parse("sents_from_grammer3-CNF.txt")
     for sent in sents_to_parse:
+        print(sent)
         print cnf_cky(cnf_pcfg, sent)
-        # print non_cnf_cky(non_cnf_pcfg, sent)
-    # print cnf_cky(PCFG.from_file_assert("cnf_grammar.txt"), "a fine sandwich understood the president in a chief on every pickled perplexed delicious fine president")
