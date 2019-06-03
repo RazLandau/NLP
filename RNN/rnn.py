@@ -110,10 +110,10 @@ def pad_sequences(data, max_length):
 
     for sentence, labels in data:
         # YOUR CODE HERE (~4-6 lines)
-        sentence += [zero_vector] * max_length
-        labels += [zero_label] * max_length
+        new_sentence = sentence + [zero_vector] * max_length
+        new_labels = labels + [zero_label] * max_length
         mask = [True]*len(sentence) + [False]*max_length
-        ret.append((sentence[:max_length], labels[:max_length], mask[:max_length]))
+        ret.append((new_sentence[:max_length], new_labels[:max_length], mask[:max_length]))
         # END YOUR CODE ###
     return ret
 
@@ -189,7 +189,7 @@ class RNNModel(NERModel):
         if labels_batch is not None:
             feed_dict[self.labels_placeholder] = labels_batch
         # END YOUR CODE
-        return
+        return feed_dict
 
     def add_embedding(self):
         """Adds an embedding layer that maps from input tokens (integers) to vectors and then
@@ -212,9 +212,16 @@ class RNNModel(NERModel):
             embeddings: tf.Tensor of shape (None, max_length, n_features*embed_size)
         """
         # YOUR CODE HERE (~4-6 lines)
-        embedded = tf.Variable(self.pretrained_embeddings)
-        features = tf.nn.embedding_lookup(embedded, self.input_placeholder)
-        embeddings = tf.reshape(features, (-1, self.max_length, self.config.n_features * self.config.embed_size))
+        # embedded = tf.Variable(self.pretrained_embeddings)
+        # features = tf.nn.embedding_lookup(embedded, self.input_placeholder)
+        # embeddings = tf.reshape(features, (-1, self.max_length, self.config.n_features * self.config.embed_size))
+        embeddings = tf.reshape(
+            tf.nn.embedding_lookup(
+                tf.Variable(
+                    self.pretrained_embeddings
+                ), self.input_placeholder
+            ), (-1, self.max_length, self.config.n_features * self.config.embed_size)
+        )
         # END YOUR CODE
         return embeddings
 
@@ -276,21 +283,17 @@ class RNNModel(NERModel):
                 # YOUR CODE HERE (~6-10 lines)
                 if time_step != 0:
                     tf.get_variable_scope().reuse_variables()
-                o_t, h = cell(x[:, time_step, :], state)
-                o_drop_t = tf.nn.dropout(o_t, dropout_rate)
-                y_t = tf.matmul(o_drop_t, U) + b2
-                preds.append(y_t)
-                # if time_step:
-                #     tf.get_variable_scope().reuse_variables()
-                # preds.append(
-                #     tf.matmul(
-                #         tf.nn.dropout(
-                #             cell(
-                #                 x[:, time_step, :], state
-                #             ), dropout_rate
-                #         ), U
-                #     ) + b2
-                # )
+                if time_step:
+                    tf.get_variable_scope().reuse_variables()
+                preds.append(
+                    tf.matmul(
+                        tf.nn.dropout(
+                            cell(
+                                x[:, time_step, :], state
+                            ), dropout_rate
+                        )[0], U
+                    ) + b2
+                )
                 # END YOUR CODE
 
         # Make sure to reshape @preds here.
@@ -362,16 +365,13 @@ class RNNModel(NERModel):
             loss: A 0-d tensor (scalar)
         """
         # YOUR CODE HERE (~2-4 lines)
-        # loss = tf.reduce_mean(
-        #     tf.boolean_mask(
-        #         tf.nn.sparse_softmax_cross_entropy_with_logits(
-        #             labels=self.labels_placeholder, logits=preds
-        #         ), self.mask_placeholder
-        #     )
-        # )
-        loss_ = tf.nn.sparse_softmax_cross_entropy_with_logits(labels=self.labels_placeholder,
-                                                              logits=preds)
-        loss = tf.reduce_mean(tf.boolean_mask(loss_, self.mask_placeholder))
+        loss = tf.reduce_mean(
+            tf.boolean_mask(
+                tf.nn.sparse_softmax_cross_entropy_with_logits(
+                    labels=self.labels_placeholder, logits=preds
+                ), self.mask_placeholder
+            )
+        )
         # END YOUR CODE
         return loss
 
