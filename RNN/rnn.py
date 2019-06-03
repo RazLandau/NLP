@@ -110,10 +110,14 @@ def pad_sequences(data, max_length):
 
     for sentence, labels in data:
         # YOUR CODE HERE (~4-6 lines)
-        new_sentence = sentence + [zero_vector] * max_length
-        new_labels = labels + [zero_label] * max_length
-        mask = [True]*len(sentence) + [False]*max_length
-        ret.append((new_sentence[:max_length], new_labels[:max_length], mask[:max_length]))
+        m, t = max_length, len(sentence)
+        ret.append(
+            (
+                sentence[:m] + [zero_vector] * (m - t),
+                labels[:m] + [zero_label] * (m - t),
+                [True] * min(m, t) + [False] * (m - t)
+            )
+        )
         # END YOUR CODE ###
     return ret
 
@@ -281,8 +285,6 @@ class RNNModel(NERModel):
         with tf.variable_scope("RNN"):
             for time_step in range(self.max_length):
                 # YOUR CODE HERE (~6-10 lines)
-                if time_step != 0:
-                    tf.get_variable_scope().reuse_variables()
                 if time_step:
                     tf.get_variable_scope().reuse_variables()
                 preds.append(
