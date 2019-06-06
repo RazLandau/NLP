@@ -21,6 +21,19 @@ def cnf_cky(pcfg, sent):
     def q(X, prob):
         return prob / pcfg._sums[X]
 
+    def print_tree(cky_dict, subtreerange, tree_root):
+        range_high_right = subtreerange[1]
+        range_low_right = cky_dict[(subtreerange[0], subtreerange[1], tree_root)][1] + 1
+        range_high_left = cky_dict[(subtreerange[0], subtreerange[1], tree_root)][1]
+        range_low_left = subtreerange[0]
+        if range_low_left == range_high_right:
+            return '(' + str(tree_root) + ' ' + str(cky_dict[(subtreerange[0], subtreerange[1], tree_root)][0][0][0]) + ')'
+        left_root = cky_dict[(subtreerange[0], subtreerange[1], tree_root)][0][0][0]
+        right_root = cky_dict[(subtreerange[0], subtreerange[1], tree_root)][0][0][1]
+        return "(" + tree_root + " " + print_tree(cky_dict, (range_low_left, range_high_left), left_root) + " " + \
+            print_tree(cky_dict, (range_low_right, range_high_right), right_root) + ")"
+
+
     # Init
     for i in range(1, n + 1):
         for X in pcfg._rules:  # Why is the rules field private?
@@ -81,19 +94,6 @@ def non_cnf_cky(pcfg, sent):
         return res
     # END YOUR CODE
     return "FAILED TO PARSE!"
-
-
-def print_tree(cky_dict, subtreerange, tree_root):
-    range_high_right = subtreerange[1]
-    range_low_right = cky_dict[(subtreerange[0], subtreerange[1], tree_root)][1] + 1
-    range_high_left = cky_dict[(subtreerange[0], subtreerange[1], tree_root)][1]
-    range_low_left = subtreerange[0]
-    if range_low_left == range_high_right:
-        return '(' + str(tree_root) + ' ' + str(cky_dict[(subtreerange[0], subtreerange[1], tree_root)][0][0][0]) + ')'
-    left_root = cky_dict[(subtreerange[0], subtreerange[1], tree_root)][0][0][0]
-    right_root = cky_dict[(subtreerange[0], subtreerange[1], tree_root)][0][0][1]
-    return "(" + tree_root + " " + print_tree(cky_dict, (range_low_left, range_high_left), left_root) + " " + \
-           print_tree(cky_dict, (range_low_right, range_high_right), right_root) + ")"
 
 
 if __name__ == '__main__':
