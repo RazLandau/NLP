@@ -440,7 +440,11 @@ class RNNModel(NERModel):
         records = []
 
         # YOUR CODE HERE (~5-10 lines)
-
+        records.append(tf.summary.histogram('logits histogram',pred))
+        records.append(tf.summary.scalar('average loss',tf.reduce_mean(loss)))
+        self.probs = tf.nn.softmax(pred)
+        cross_entropy = tf.reduce_mean(-tf.reduce_sum(self.probs*tf.log(tf.clip_by_value(self.probs,1e-10,1.0))))
+        records.append(tf.summary.scalar('average entropy',cross_entropy))
         # END YOUR CODE
 
         assert hasattr(self, 'probs'), "self.probs should be set."
