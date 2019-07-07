@@ -1,0 +1,86 @@
+2019-06-11 14:58:27,343:INFO: Building model...
+2019-06-11 14:58:27,354:WARNING: From /Users/razlandau/Documents/GitHub/NLP/RNN/venv/lib/python2.7/site-packages/tensorflow/python/framework/op_def_library.py:263: colocate_with (from tensorflow.python.framework.ops) is deprecated and will be removed in a future version.
+Instructions for updating:
+Colocations handled automatically by placer.
+2019-06-11 14:58:27,922:WARNING: From rnn.py:330: __init__ (from tensorflow.python.ops.rnn_cell_impl) is deprecated and will be removed in a future version.
+Instructions for updating:
+This class is equivalent as tf.keras.layers.GRUCell, and will be replaced by that in Tensorflow 2.0.
+2019-06-11 14:58:27,924:WARNING: From rnn.py:332: dynamic_rnn (from tensorflow.python.ops.rnn) is deprecated and will be removed in a future version.
+Instructions for updating:
+Please use `keras.layers.RNN(cell)`, which is equivalent to this API
+2019-06-11 14:58:28,005:WARNING: From /Users/razlandau/Documents/GitHub/NLP/RNN/venv/lib/python2.7/site-packages/tensorflow/python/ops/rnn_cell_impl.py:1259: calling dropout (from tensorflow.python.ops.nn_ops) with keep_prob is deprecated and will be removed in a future version.
+Instructions for updating:
+Please use `rate` instead of `keep_prob`. Rate should be set to `rate = 1 - keep_prob`.
+2019-06-11 14:58:28,102:WARNING: From /Users/razlandau/Documents/GitHub/NLP/RNN/venv/lib/python2.7/site-packages/tensorflow/python/ops/array_grad.py:425: to_int32 (from tensorflow.python.ops.math_ops) is deprecated and will be removed in a future version.
+Instructions for updating:
+Use tf.cast instead.
+2019-06-11 14:58:28,434:INFO: took 1.09 seconds
+2019-06-11 14:58:29,479:INFO: Epoch 1 out of 3
+2019-06-11 15:00:14,741:INFO: Evaluating on development data
+2019-06-11 15:00:28,705:DEBUG: Token-level confusion matrix:
+go\gu   	PER     	ORG     	LOC     	MISC    	O       
+PER     	2758.00 	246.00  	22.00   	20.00   	103.00  
+ORG     	158.00  	1575.00 	74.00   	130.00  	155.00  
+LOC     	53.00   	303.00  	1583.00 	85.00   	70.00   
+MISC    	45.00   	182.00  	42.00   	890.00  	109.00  
+O       	52.00   	111.00  	19.00   	58.00   	42519.00
+
+2019-06-11 15:00:28,706:DEBUG: Token-level scores:
+label	acc  	prec 	rec  	f1   
+PER  	0.99 	0.90 	0.88 	0.89 
+ORG  	0.97 	0.65 	0.75 	0.70 
+LOC  	0.99 	0.91 	0.76 	0.83 
+MISC 	0.99 	0.75 	0.70 	0.73 
+O    	0.99 	0.99 	0.99 	0.99 
+micro	0.98 	0.96 	0.96 	0.96 
+macro	0.98 	0.84 	0.82 	0.83 
+not-O	0.98 	0.81 	0.79 	0.80 
+
+2019-06-11 15:00:28,706:INFO: Entity level P/R/F1: 0.72/0.75/0.74
+2019-06-11 15:00:28,706:INFO: New best score! Saving model in results/gru/20190611_145824/model.weights
+2019-06-11 15:00:28,864:INFO: Epoch 2 out of 3
+2019-06-11 15:02:14,743:INFO: Evaluating on development data
+2019-06-11 15:02:29,060:DEBUG: Token-level confusion matrix:
+go\gu   	PER     	ORG     	LOC     	MISC    	O       
+PER     	2854.00 	113.00  	77.00   	19.00   	86.00   
+ORG     	153.00  	1570.00 	116.00  	104.00  	149.00  
+LOC     	42.00   	206.00  	1741.00 	46.00   	59.00   
+MISC    	38.00   	104.00  	52.00   	959.00  	115.00  
+O       	54.00   	66.00   	22.00   	46.00   	42571.00
+
+2019-06-11 15:02:29,060:DEBUG: Token-level scores:
+label	acc  	prec 	rec  	f1   
+PER  	0.99 	0.91 	0.91 	0.91 
+ORG  	0.98 	0.76 	0.75 	0.76 
+LOC  	0.99 	0.87 	0.83 	0.85 
+MISC 	0.99 	0.82 	0.76 	0.79 
+O    	0.99 	0.99 	1.00 	0.99 
+micro	0.99 	0.97 	0.97 	0.97 
+macro	0.99 	0.87 	0.85 	0.86 
+not-O	0.99 	0.85 	0.83 	0.84 
+
+2019-06-11 15:02:29,060:INFO: Entity level P/R/F1: 0.77/0.79/0.78
+2019-06-11 15:02:29,060:INFO: New best score! Saving model in results/gru/20190611_145824/model.weights
+2019-06-11 15:02:29,207:INFO: Epoch 3 out of 3
+2019-06-11 15:04:13,537:INFO: Evaluating on development data
+2019-06-11 15:04:28,006:DEBUG: Token-level confusion matrix:
+go\gu   	PER     	ORG     	LOC     	MISC    	O       
+PER     	2906.00 	60.00   	86.00   	22.00   	75.00   
+ORG     	154.00  	1594.00 	136.00  	92.00   	116.00  
+LOC     	34.00   	72.00   	1923.00 	28.00   	37.00   
+MISC    	37.00   	79.00   	88.00   	959.00  	105.00  
+O       	46.00   	54.00   	35.00   	50.00   	42574.00
+
+2019-06-11 15:04:28,007:DEBUG: Token-level scores:
+label	acc  	prec 	rec  	f1   
+PER  	0.99 	0.91 	0.92 	0.92 
+ORG  	0.99 	0.86 	0.76 	0.81 
+LOC  	0.99 	0.85 	0.92 	0.88 
+MISC 	0.99 	0.83 	0.76 	0.79 
+O    	0.99 	0.99 	1.00 	0.99 
+micro	0.99 	0.97 	0.97 	0.97 
+macro	0.99 	0.89 	0.87 	0.88 
+not-O	0.99 	0.87 	0.86 	0.87 
+
+2019-06-11 15:04:28,007:INFO: Entity level P/R/F1: 0.81/0.83/0.82
+2019-06-11 15:04:28,007:INFO: New best score! Saving model in results/gru/20190611_145824/model.weights
