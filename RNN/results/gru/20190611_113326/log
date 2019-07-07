@@ -1,0 +1,16 @@
+2019-06-11 11:33:28,669:INFO: Building model...
+2019-06-11 11:33:28,679:WARNING: From /Users/razlandau/Documents/GitHub/NLP/RNN/venv/lib/python2.7/site-packages/tensorflow/python/framework/op_def_library.py:263: colocate_with (from tensorflow.python.framework.ops) is deprecated and will be removed in a future version.
+Instructions for updating:
+Colocations handled automatically by placer.
+2019-06-11 11:33:29,145:WARNING: From rnn.py:329: __init__ (from tensorflow.python.ops.rnn_cell_impl) is deprecated and will be removed in a future version.
+Instructions for updating:
+This class is equivalent as tf.keras.layers.GRUCell, and will be replaced by that in Tensorflow 2.0.
+2019-06-11 11:33:29,147:WARNING: From rnn.py:331: dynamic_rnn (from tensorflow.python.ops.rnn) is deprecated and will be removed in a future version.
+Instructions for updating:
+Please use `keras.layers.RNN(cell)`, which is equivalent to this API
+2019-06-11 11:33:29,216:WARNING: From /Users/razlandau/Documents/GitHub/NLP/RNN/venv/lib/python2.7/site-packages/tensorflow/python/ops/rnn_cell_impl.py:1259: calling dropout (from tensorflow.python.ops.nn_ops) with keep_prob is deprecated and will be removed in a future version.
+Instructions for updating:
+Please use `rate` instead of `keep_prob`. Rate should be set to `rate = 1 - keep_prob`.
+2019-06-11 11:33:29,298:WARNING: From /Users/razlandau/Documents/GitHub/NLP/RNN/venv/lib/python2.7/site-packages/tensorflow/python/ops/array_grad.py:425: to_int32 (from tensorflow.python.ops.math_ops) is deprecated and will be removed in a future version.
+Instructions for updating:
+Use tf.cast instead.

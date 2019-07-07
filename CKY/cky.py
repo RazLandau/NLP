@@ -21,7 +21,7 @@ def cnf_cky(pcfg, sent):
     def q(X, prob):
         return prob / pcfg._sums[X]
 
-    def print_tree(cky_dict, subtreerange, tree_root):
+    # def print_tree(cky_dict, subtreerange, tree_root):
         range_high_right = subtreerange[1]
         range_low_right = cky_dict[(subtreerange[0], subtreerange[1], tree_root)][1] + 1
         range_high_left = cky_dict[(subtreerange[0], subtreerange[1], tree_root)][1]
