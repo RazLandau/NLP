@@ -440,12 +440,13 @@ class RNNModel(NERModel):
         records = []
 
         # YOUR CODE HERE (~5-10 lines)
-        pred = tf.boolean_mask(pred, self.mask_placeholder)
-        records.append(tf.summary.histogram('logits_histogram', pred))
-        records.append(tf.summary.scalar('average_loss', tf.reduce_mean(loss)))
-        self.probs = tf.nn.softmax(pred)
-        cross_entropy = tf.reduce_mean(-tf.reduce_sum(self.probs*tf.log(tf.clip_by_value(self.probs, 1e-10, 1.0))))
-        records.append(tf.summary.scalar('average_entropy', cross_entropy))
+        pred_masked = tf.boolean_mask(pred, self.mask_placeholder)
+        self.probs = tf.nn.softmax(pred_masked)
+        records.append(tf.summary.histogram('logits_histogram',self.probs))
+        records.append(tf.summary.scalar('average_loss',tf.reduce_mean(loss)))
+        labels_masked = tf.cast(tf.boolean_mask(self.labels_placeholder, self.mask_placeholder), tf.float32)
+#        cross_entropy = tf.reduce_mean(-tf.reduce_sum(labels_masked*tf.log(tf.clip_by_value(self.probs,1e-10,1.0))))
+#        records.append(tf.summary.scalar('average_entropy',cross_entropy))
         # END YOUR CODE
 
         assert hasattr(self, 'probs'), "self.probs should be set."
@@ -610,9 +611,9 @@ def do_train(args):
             else:
                 # Save predictions in a text file.
                 output = model.output(session, dev_raw)
-                sentences, labels, predictions = zip(*output)
+                sentences, labels, predictions = list(zip(*output))
                 predictions = [[LBLS[l] for l in preds] for preds in predictions]
-                output = zip(sentences, labels, predictions)
+                output = list(zip(sentences, labels, predictions))
 
                 with open(model.config.conll_output, 'w') as f:
                     write_conll(f, output)
