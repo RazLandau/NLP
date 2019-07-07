@@ -99,7 +99,6 @@ class NERModel(Model):
                 preds_ = self.predict_on_batch(sess, *batch)
                 preds += list(preds_)
             prog.update(i + 1, [])
-
         return self.consolidate_predictions(inputs_raw, inputs, preds, probs)
 
     def fit(self, sess, saver, train_examples_raw, dev_set_raw, writer=None):

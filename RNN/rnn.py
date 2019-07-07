@@ -34,7 +34,7 @@ class Config:
     information parameters. Model objects are passed a Config() object at
     instantiation.
     """
-    n_word_features = 2 # Number of features for every word in the input.
+    n_word_features = 2  # Number of features for every word in the input.
     window_size = 1
     n_features = (2 * window_size + 1) * n_word_features  # Number of features for every word in the input.
     max_length = 120  # longest sequence to parse
@@ -325,12 +325,14 @@ class RNNModel(NERModel):
         """
         # YOUR CODE HERE (~4-6 lines)
         #preds = None
-        gru_cell = tf.nn.rnn_cell.GRUCell(Config.hidden_size, name='cell', 
-            kernel_initializer=tf.contrib.layers.xavier_initializer(), bias_initializer=tf.constant_initializer(0.))
+        gru_cell = tf.nn.rnn_cell.GRUCell(Config.hidden_size, name='cell',
+                                          kernel_initializer=tf.contrib.layers.xavier_initializer(),
+                                          bias_initializer=tf.constant_initializer(0.))
         gru_do_wrapper = tf.nn.rnn_cell.DropoutWrapper(gru_cell, output_keep_prob=dropout_rate)
-        outputs, state = tf.nn.dynamic_rnn(gru_do_wrapper, x, dtype = tf.float32)
-        output_layer = tf.layers.Dense(self.config.n_classes, name='FFNN', kernel_initializer=tf.contrib.layers.xavier_initializer(),
-            bias_initializer=tf.constant_initializer(0.))
+        outputs, state = tf.nn.dynamic_rnn(gru_do_wrapper, x, dtype=tf.float32)
+        output_layer = tf.layers.Dense(self.config.n_classes, name='FFNN',
+                                       kernel_initializer=tf.contrib.layers.xavier_initializer(),
+                                       bias_initializer=tf.constant_initializer(0.))
         preds = output_layer(outputs)
         # END YOUR CODE
 
@@ -453,7 +455,7 @@ class RNNModel(NERModel):
         return summary
 
     def preprocess_sequence_data(self, examples):
-        def featurize_windows(data, start, end, window_size = 1):
+        def featurize_windows(data, start, end, window_size=1):
             """Uses the input sequences in @data to construct new windowed data points.
             """
             ret = []
